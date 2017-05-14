@@ -256,7 +256,7 @@ public class MainActivity extends TransitionHelper.MainActivity
         String token = getSharedPreferences("accountData", Activity.MODE_PRIVATE).getString("token", "");
 
         new Thread(new postData(
-                getString(R.string.postURL), getString(R.string.token_equals) + token,
+                getString(R.string.postURL), getString(R.string.token_equals) + token + "&filter=T4,S2,Y1",
                 new Handler() {
                     @Override
                     public void handleMessage(Message msg) {
