@@ -14,8 +14,8 @@
 
     <string name="grades">GRADES</string>
     <string name="attendance">ATTENDANCE</string>
-    <string name="block">Block</string>
-    <string name="room">Room</string>
+    <string name="block">Block %1$s</string>
+    <string name="room">Room %1$s</string>
     <string name="term">Term</string>
     <string name="assignments">Assignments</string>
     <string name="all_terms">ALL TERMS</string>
