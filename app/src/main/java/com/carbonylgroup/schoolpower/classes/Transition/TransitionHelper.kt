@@ -174,7 +174,7 @@ class TransitionHelper private constructor(internal val activity: Activity, save
         override var transitionHelper: TransitionHelper? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
-            TransitionHelper.init(this, savedInstanceState!!)
+            TransitionHelper.init(this, savedInstanceState)
             TransitionHelper.of(this).addListener(this)
             super.onCreate(savedInstanceState)
         }
@@ -262,7 +262,7 @@ class TransitionHelper private constructor(internal val activity: Activity, save
          * *
          * @param savedInstanceState
          */
-        fun init(source: Source, savedInstanceState: Bundle) {
+        fun init(source: Source, savedInstanceState: Bundle?) {
             source.transitionHelper = TransitionHelper(source as Activity, savedInstanceState)
         }
 

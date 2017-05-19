@@ -26,7 +26,7 @@
                 android:layout_height="128dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="30dp"
-                android:src="@drawable/icon" />
+                android:src="@drawable/icon_light" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"

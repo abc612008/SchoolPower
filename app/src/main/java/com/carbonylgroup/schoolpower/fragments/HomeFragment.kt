@@ -6,6 +6,7 @@ package com.carbonylgroup.schoolpower.fragments
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +29,6 @@ import com.carbonylgroup.schoolpower.classes.Adapter.FoldingCellListAdapter
 import com.carbonylgroup.schoolpower.classes.ListItems.MainListItem
 import com.carbonylgroup.schoolpower.classes.Transition.TransitionHelper
 import com.carbonylgroup.schoolpower.classes.Utils.Utils
-
 
 class HomeFragment : TransitionHelper.BaseFragment() {
 
@@ -109,15 +109,18 @@ class HomeFragment : TransitionHelper.BaseFragment() {
             unfoldedIndexesBackUp = adapter!!.unfoldedIndexes
         }
 
-        theListView.adapter = adapter
+        if (dataList != null) theListView.adapter = adapter
     }
 
+    fun setRefreshing(isRefreshing : Boolean) {
+        home_swipe_refresh_layout!!.isRefreshing = isRefreshing
+    }
     fun refreshAdapter(newDataList: ArrayList<MainListItem>) {
 
         adapter!!.setMainListItems(newDataList)
         adapter!!.notifyDataSetChanged()
         showSnackBar(activity.getString(R.string.data_updated))
-        home_swipe_refresh_layout!!.isRefreshing = false
+        setRefreshing(false)
     }
 
     private fun getItemViewByPosition(position: Int, listView: ListView): View {
@@ -170,7 +173,6 @@ class HomeFragment : TransitionHelper.BaseFragment() {
     }
 
     private fun showSnackBar(msg: String) {
-
         val snackbar = Snackbar.make(activity.findViewById(R.id.main_coordinate_layout), msg, Snackbar.LENGTH_SHORT)
         snackbar.view.setBackgroundColor(resources.getColor(R.color.accent))
         snackbar.show()

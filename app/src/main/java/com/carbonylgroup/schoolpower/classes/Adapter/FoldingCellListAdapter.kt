@@ -1,7 +1,9 @@
 package com.carbonylgroup.schoolpower.classes.Adapter
 
+
 import android.content.Context
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -13,18 +15,11 @@ import android.view.animation.ScaleAnimation
 import android.widget.ArrayAdapter
 import android.widget.RelativeLayout
 import android.widget.TextView
-
-import com.carbonylgroup.schoolpower.classes.ListItems.AssignmentItem
-import com.ramotion.foldingcell.FoldingCell
-
-
-import java.util.ArrayList
-import java.util.HashSet
-
 import com.carbonylgroup.schoolpower.R
 import com.carbonylgroup.schoolpower.classes.ListItems.MainListItem
-import com.carbonylgroup.schoolpower.classes.ListItems.PeriodGradeItem
 import com.carbonylgroup.schoolpower.classes.Utils.Utils
+import com.ramotion.foldingcell.FoldingCell
+import java.util.*
 
 /**
  * Simple example of ListAdapter for using with Folding Cell
@@ -32,14 +27,10 @@ import com.carbonylgroup.schoolpower.classes.Utils.Utils
  */
 class FoldingCellListAdapter(context: Context, private var mainListItems: ArrayList<MainListItem>?, val unfoldedIndexes: HashSet<Int>, private val transformedPosition: Int) : ArrayAdapter<MainListItem>(context, 0, mainListItems) {
 
-    private val utils: Utils
+    private val utils: Utils = Utils(getContext())
     private var fab_in: Animation? = null
     private var defaultRequestBtnClickListener: View.OnClickListener? = null
-
-
-    init {
-        utils = Utils(getContext())
-    }
+    val periodGradeItemClickListener: View.OnClickListener? = null
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
@@ -121,10 +112,10 @@ class FoldingCellListAdapter(context: Context, private var mainListItems: ArrayL
             }
         }
         if (anyNew) {
-            viewHolder.fold_subject_title_tv!!.setTextColor(context.resources.getColor(R.color.white))
-            viewHolder.fold_teacher_name_tv!!.setTextColor(context.resources.getColor(R.color.white_0_5))
-            viewHolder.fold_block_letter_tv!!.setTextColor(context.resources.getColor(R.color.white_0_5))
-            viewHolder.fold_background!!.setBackgroundColor(context.resources.getColor(R.color.accent))
+            viewHolder.fold_subject_title_tv!!.setTextColor(ContextCompat.getColor(context, R.color.white))
+            viewHolder.fold_teacher_name_tv!!.setTextColor(ContextCompat.getColor(context, R.color.white_0_5))
+            viewHolder.fold_block_letter_tv!!.setTextColor(ContextCompat.getColor(context, R.color.white_0_5))
+            viewHolder.fold_background!!.setBackgroundColor(ContextCompat.getColor(context, R.color.accent))
         }
 
         return cell

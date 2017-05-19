@@ -6,6 +6,7 @@ package com.carbonylgroup.schoolpower.activities
 
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -19,6 +20,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.Toolbar
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -51,9 +53,8 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
     private val mainToolBar: Toolbar by bindView(R.id.main_toolbar)
     private val mainAppBar: AppBarLayout by bindView(R.id.main_app_bar)
     private val drawer: DrawerLayout by bindView(R.id.drawer_layout)
-    private var toggleIcon: DrawerArrowDrawable = DrawerArrowDrawable(this)
-    private var toggle: ActionBarDrawerToggle = ActionBarDrawerToggle(
-            this, drawer, mainToolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+    private lateinit var toggleIcon: DrawerArrowDrawable
+    private lateinit var toggle: ActionBarDrawerToggle
 
     /* Fragments */
     private var homeFragment: HomeFragment? = null
@@ -67,6 +68,26 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
         initValue()
         initUI()
         initOnClick()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            R.id.action_refresh -> {
+                initDataJson()
+                homeFragment!!.setRefreshing(true)
+            }
+            R.id.action_new -> {
+                //TODO NEW ASSIGNMENTS
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -95,7 +116,9 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
 
     /* Initializer */
     private fun initValue() {
-
+        toggleIcon = DrawerArrowDrawable(this)
+        toggle = ActionBarDrawerToggle(
+                this, drawer, mainToolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         try {
             val input = utils.readDataArrayList()
             if (input != null) dataList = input
@@ -131,8 +154,9 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
         toggle.setHomeAsUpIndicator(toggleIcon)
         toggle.syncState()
 
-        val drawer_username = drawer.findViewById(R.id.nav_header_username) as TextView
-        //drawer_username.setText();
+        (navigationView.getHeaderView(0).findViewById(R.id.nav_header_username) as TextView).text = getUsername()
+        (navigationView.getHeaderView(0).findViewById(R.id.nav_header_id) as TextView).text = getUserID()
+
     }
 
     /* Fragments Handler */
@@ -157,13 +181,11 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
                 presentFragment = 1
             }
 
-            R.id.nav_sign_out ->
+            R.id.nav_settings -> {
+                //TODO SETTING
+            }
 
-                SignOut()
-
-            R.id.action_refresh ->
-
-                initDataJson()
+            R.id.nav_sign_out -> confirmSignOut()
 
             else -> {
             }
@@ -214,7 +236,9 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
 
     fun initDataJson() {
 
-        val oldMainItemList = ArrayList<MainListItem>(dataList)
+        val oldMainItemList = ArrayList<MainListItem>()
+        if (dataList != null) oldMainItemList.addAll(dataList!!)
+
         val token = getSharedPreferences("accountData", Activity.MODE_PRIVATE).getString("token", "")
 
         Thread(postData(
@@ -263,7 +287,35 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
                 })).start()
     }
 
-    private fun SignOut() {
+    private fun getUsername(): String {
+
+        val sharedPreferences = getSharedPreferences(getString(R.string.accountData), Activity.MODE_PRIVATE)
+        val name = sharedPreferences.getString(getString(R.string.student_name), "")
+        if (name != "") {
+            val fullName = name.split(" ")
+            return fullName[1] + " " + fullName[2]
+        }
+        return getString(R.string.no_username)
+    }
+
+    private fun getUserID(): String {
+
+        val sharedPreferences = getSharedPreferences(getString(R.string.accountData), Activity.MODE_PRIVATE)
+        return getString(R.string.user_id_indicator) + " " + sharedPreferences.getString(getString(R.string.user_id), "")
+    }
+
+    private fun confirmSignOut() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setIcon(getDrawable(R.drawable.ic_exit_accent))
+        builder.setTitle(getString(R.string.signing_out_dialog_title))
+        builder.setMessage(getString(R.string.signing_out_dialog_message))
+        builder.setPositiveButton(getString(R.string.signing_out_dialog_positive)) { _, _ -> signOut()}
+        builder.setNegativeButton(getString(R.string.signing_out_dialog_negative), null)
+        builder.show()
+    }
+
+    private fun signOut() {
 
         val spEditor = getSharedPreferences(getString(R.string.accountData), Activity.MODE_PRIVATE).edit()
         spEditor.putString(getString(R.string.token), "")
@@ -293,7 +345,7 @@ class MainActivity : TransitionHelper.MainActivity(), NavigationView.OnNavigatio
 
         anim.addUpdateListener { valueAnimator ->
             val slideOffset = valueAnimator.animatedValue as Float
-            toggleIcon.progress = slideOffset
+            toggleIcon!!.progress = slideOffset
             if (!toArrow && slideOffset == 0f) toggle.isDrawerIndicatorEnabled = true
         }
         anim.interpolator = DecelerateInterpolator()

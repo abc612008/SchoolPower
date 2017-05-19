@@ -50,7 +50,15 @@ class LoginActivity : Activity() {
         val input_username = findViewById(R.id.input_username) as EditText
         val input_password = findViewById(R.id.input_password) as EditText
 
-        findViewById(R.id.login_fab).setOnClickListener { loginAction(input_username.text.toString(), input_password.text.toString()) }
+        findViewById(R.id.login_fab).setOnClickListener {
+            saveUserId(input_username.text.toString())
+            loginAction(input_username.text.toString(), input_password.text.toString())
+        }
+    }
+    private fun saveUserId(stringId:String) {
+        val spEditor = getSharedPreferences(getString(R.string.accountData), Activity.MODE_PRIVATE).edit()
+        spEditor.putString(getString(R.string.user_id), stringId)
+        spEditor.apply()
     }
 
     fun loginAction(username: String, password: String) {
