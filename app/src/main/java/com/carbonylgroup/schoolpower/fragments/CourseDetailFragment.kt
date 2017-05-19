@@ -26,7 +26,7 @@ import com.carbonylgroup.schoolpower.classes.Utils.Utils
 
 class CourseDetailFragment : TransitionHelper.BaseFragment() {
 
-    private var view: View? = null
+    private var view_private: View? = null
     private var utils: Utils? = null
     private var itemToPresent: MainListItem? = null
     private var offset_up_from_bottom: Animation? = null
@@ -35,12 +35,12 @@ class CourseDetailFragment : TransitionHelper.BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle): View? {
 
-        view = inflater.inflate(R.layout.course_detail_view_content, container, false)
+        view_private = inflater.inflate(R.layout.course_detail_view_content, container, false)
 
         initValue()
         initAnim()
 
-        return view
+        return view_private
     }
 
     private fun initValue() {
@@ -57,11 +57,11 @@ class CourseDetailFragment : TransitionHelper.BaseFragment() {
         if (transformedPosition != -1) {
 
             itemToPresent = MainActivity.of(activity).mainListItemTransporter
-            view!!.findViewById(R.id.detail_view_header).setBackgroundColor(utils!!.getColorByLetterGrade(activity, itemToPresent!!.letterGrade))
-            (view!!.findViewById(R.id.detail_subject_title_tv) as TextView).text = itemToPresent!!.subjectTitle
+            view_private!!.findViewById(R.id.detail_view_header).setBackgroundColor(utils!!.getColorByLetterGrade(activity, itemToPresent!!.letterGrade))
+            (view_private!!.findViewById(R.id.detail_subject_title_tv) as TextView).text = itemToPresent!!.subjectTitle
             MainActivity.of(activity).setToolBarColor(utils!!.getColorByLetterGrade(activity, itemToPresent!!.letterGrade), true)
 
-            course_detail_recycler = view!!.findViewById(R.id.course_detail_recycler) as RecyclerView
+            course_detail_recycler = view_private!!.findViewById(R.id.course_detail_recycler) as RecyclerView
             dataList = MainActivity.of(activity).dataList
             val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             val adapter = CourseDetailAdapter(activity, dataList!![transformedPosition])

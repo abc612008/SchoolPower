@@ -34,7 +34,8 @@ class HomeFragment : TransitionHelper.BaseFragment() {
 
     private var transformedPosition = -1
 
-    private var view: View? = null
+    private var view_private: View? = null
+
     private var fab_out: Animation? = null
     private var fab_in: Animation? = null
     private var courseDetailFragment: CourseDetailFragment? = null
@@ -46,12 +47,12 @@ class HomeFragment : TransitionHelper.BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle): View? {
 
-        view = inflater.inflate(R.layout.home_view_content, container, false)
+        view_private = inflater.inflate(R.layout.home_view_content, container, false)
 
         initAnim()
         initValue()
 
-        return view
+        return view_private
     }
 
     private fun initAnim() {
@@ -71,7 +72,7 @@ class HomeFragment : TransitionHelper.BaseFragment() {
         MainActivity.of(activity).presentFragment = 0
         MainActivity.of(activity).setToolBarElevation(utils!!.dpToPx(4))
         MainActivity.of(activity).setToolBarTitle(getString(R.string.dashboard))
-        home_swipe_refresh_layout = view!!.findViewById(R.id.home_swipe_refresh_layout) as SwipeRefreshLayout
+        home_swipe_refresh_layout = view_private!!.findViewById(R.id.home_swipe_refresh_layout) as SwipeRefreshLayout
         home_swipe_refresh_layout!!.setColorSchemeResources(R.color.accent, R.color.A_score_green, R.color.B_score_green,
                 R.color.Cp_score_yellow, R.color.C_score_orange, R.color.Cm_score_red, R.color.primary)
         home_swipe_refresh_layout!!.setOnRefreshListener { MainActivity.of(activity).initDataJson() }
@@ -80,11 +81,11 @@ class HomeFragment : TransitionHelper.BaseFragment() {
 
     private fun initAdapter() {
 
-        val theListView = view!!.findViewById(R.id.mainListView) as ListView
+        val theListView = view_private!!.findViewById(R.id.mainListView) as ListView
 
         adapter = FoldingCellListAdapter(activity, dataList, unfoldedIndexesBackUp, transformedPosition)
 
-        adapter!!.setDefaultRequestBtnClickListener { v ->
+        adapter!!.setDefaultRequestBtnClickListener (View.OnClickListener { v ->
             MainActivity.of(activity).mainListItemTransporter = dataList!![theListView.getPositionForView(v)]
 
             if (transformedPosition != -1) {
@@ -99,7 +100,7 @@ class HomeFragment : TransitionHelper.BaseFragment() {
             itemView.findViewById(R.id.floating_action_button).startAnimation(fab_out)
             itemView.findViewById(R.id.floating_action_button).visibility = View.GONE
             gotoCourseDetail(itemView.findViewById(R.id.unfold_header_view), itemView.findViewById(R.id.detail_subject_title_tv), transformedPosition)
-        }
+        })
 
         theListView.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, pos, l ->
             adapter!!.registerToggle(pos)
@@ -159,7 +160,7 @@ class HomeFragment : TransitionHelper.BaseFragment() {
 
     private fun preRenderUnfoldCells() {
 
-        val theListView = view!!.findViewById(R.id.mainListView) as ListView
+        val theListView = view_private!!.findViewById(R.id.mainListView) as ListView
         for (i in 0..9) {
 
             val itemView = getItemViewByPosition(transformedPosition, theListView)

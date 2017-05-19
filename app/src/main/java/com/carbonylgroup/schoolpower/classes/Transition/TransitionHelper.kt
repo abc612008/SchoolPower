@@ -21,7 +21,10 @@ import java.util.Arrays
  * Provides extra lifecycle events and shims for shared element transitions
  * See the included MainActivity and BaseFragment for example use
  */
-class TransitionHelper private constructor(internal var activity: Activity, savedInstanceState: Bundle?) {
+class TransitionHelper private constructor(internal val activity: Activity, savedInstanceState: Bundle?) {
+
+    var isAfterEnter = false
+        private set
 
     init {
         isAfterEnter = savedInstanceState != null //if saved instance is not null we've already "entered"
@@ -102,15 +105,7 @@ class TransitionHelper private constructor(internal var activity: Activity, save
      * Your Activity should implement Source and call TransitionHelper.init() from Activity.onCreate()
      */
     interface Source {
-        /**
-         * Getter for TransitionHelper instance
-         * @return
-         */
-        /**
-         * Setter for TransitionHelper instance
-         * @param transitionHelper
-         */
-        var transitionHelper: TransitionHelper
+        var transitionHelper: TransitionHelper?
     }
 
 
@@ -156,9 +151,6 @@ class TransitionHelper private constructor(internal var activity: Activity, save
         isAfterEnter = true
     }
 
-    var isAfterEnter = false
-        private set
-
     private var isPostponeEnterTransition = false
     private fun postponeEnterTransition() {
         if (isAfterEnter) return
@@ -179,10 +171,10 @@ class TransitionHelper private constructor(internal var activity: Activity, save
     }
 
     open class MainActivity : ActionBarActivity(), TransitionHelper.Source, TransitionHelper.Listener {
-        override var transitionHelper: TransitionHelper
+        override var transitionHelper: TransitionHelper? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
-            TransitionHelper.init(this, savedInstanceState)
+            TransitionHelper.init(this, savedInstanceState!!)
             TransitionHelper.of(this).addListener(this)
             super.onCreate(savedInstanceState)
         }
@@ -197,30 +189,17 @@ class TransitionHelper private constructor(internal var activity: Activity, save
             super.onResume()
         }
 
-        override fun onBackPressed() {
-            TransitionHelper.of(this).onBackPressed()
-        }
+        override fun onBackPressed() = TransitionHelper.of(this).onBackPressed()
 
+        override fun onBeforeViewShows(contentView: View) {}
 
-        override fun onBeforeViewShows(contentView: View) {
+        override fun onBeforeEnter(contentView: View) {}
 
-        }
+        override fun onAfterEnter() {}
 
-        override fun onBeforeEnter(contentView: View) {
+        override fun onBeforeBack() = false
 
-        }
-
-        override fun onAfterEnter() {
-
-        }
-
-        override fun onBeforeBack(): Boolean {
-            return false
-        }
-
-        override fun onBeforeReturn() {
-
-        }
+        override fun onBeforeReturn() {}
     }
 
     open class BaseFragment : Fragment(), TransitionHelper.Listener {
@@ -274,7 +253,7 @@ class TransitionHelper private constructor(internal var activity: Activity, save
          * @return
          */
         fun of(a: Activity): TransitionHelper {
-            return (a as Source).transitionHelper
+            return (a as Source).transitionHelper!!
         }
 
         /**
@@ -303,7 +282,7 @@ class TransitionHelper private constructor(internal var activity: Activity, save
                 if (pair.first == null) iter.remove()
             }
 
-            sharedElements = list.toTypedArray<Pair<*, *>>()
+            sharedElements = list.toTypedArray<Pair<View, String>>()
             return ActivityOptionsCompat.makeSceneTransitionAnimation(
                     fromActivity,
                     *sharedElements
